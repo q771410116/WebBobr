@@ -2,6 +2,7 @@
 using Books.Http.Rule;
 using Books.Http.Write;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace Books.Http
@@ -11,6 +12,8 @@ namespace Books.Http
     /// </summary>
     internal class CrawlerStart
     {
+        public bool IsDebug { get; set; }
+
         public void Start(IRule rule, int index)
         {
             // 获取网页列表
@@ -42,6 +45,13 @@ namespace Books.Http
                 ThreadPool.QueueUserWorkItem(new WaitCallback(WriteBookData), write);
 
 
+                //是否测试模式
+                if (IsDebug)
+                {
+                    RunContentHandle(list[0], rule, write);
+                    return;
+                }
+
                 // 请求列表
                 foreach (var item in list)
                 {
@@ -71,13 +81,53 @@ namespace Books.Http
             // 解析文章内容
             var content = rule.ParseContent(doc);
 
+            // 解析下一页
+            var next = rule.ParseNextUrl(doc);
+
             var book = new Chapter();
             book.Title = title;
             book.Content = content;
             book.Url = url;
 
-            // 缓存到写入器
-            PushBook(write, book);
+            if (!string.IsNullOrEmpty(next))
+            {
+                // 读取下一页
+                RunNextHandle(rule, write, book, next);
+            }
+            else
+            {
+                // 缓存到写入器
+                PushBook(write, book);
+            }
+        }
+
+        private void RunNextHandle(IRule rule, IWrite write, Chapter book, string url)
+        {
+
+            // 请求页面
+            Requestx requestx = new Requestx();
+
+            // 获取文章页面
+            var doc = requestx.Execute(url);
+
+            // 解析文章内容
+            var content = rule.ParseContent(doc);
+
+            // 解析下一页
+            var next = rule.ParseNextUrl(doc);
+
+            book.Content = string.Concat(book.Content.TrimEnd(), content);
+
+            if (!string.IsNullOrEmpty(next))
+            {
+                // 读取下一页
+                RunNextHandle(rule, write, book, next);
+            }
+            else
+            {
+                // 缓存到写入器
+                PushBook(write, book);
+            }
         }
 
         public void WriteBookData(object state)

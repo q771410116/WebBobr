@@ -64,6 +64,16 @@ namespace Books.Http.Rule
         }
 
         /// <summary>
+        /// 解析下一页
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns></returns>
+        public string ParseNextUrl(HtmlDocument doc)
+        {
+            return "";
+        }
+
+        /// <summary>
         /// 解析内容
         /// </summary>
         /// <param name="doc"></param>

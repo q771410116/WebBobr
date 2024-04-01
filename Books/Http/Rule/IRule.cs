@@ -41,6 +41,14 @@ namespace Books.Http.Rule
         string ParseContent(HtmlAgilityPack.HtmlDocument doc);
 
         /// <summary>
+        /// 爬取下一页的内容
+        /// 用于处理一篇文章中，包含下一页的场景
+        /// </summary>
+        /// <param name="doc"></param>
+        /// <returns>下一页的url</returns>
+        string ParseNextUrl(HtmlAgilityPack.HtmlDocument doc);
+
+        /// <summary>
         /// 获取写入模型
         /// </summary>
         /// <returns></returns>
