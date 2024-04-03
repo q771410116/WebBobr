@@ -1,6 +1,5 @@
 ﻿using Books.Http;
 using Books.Http.Rule;
-using Books.Impl;
 using System;
 using System.Threading;
 using System.Windows.Forms;
@@ -18,7 +17,7 @@ namespace Books
         {
             ThreadPool.SetMaxThreads(1, 1);
 
-            var rule = new LewenRule();
+            var rule = new AishangbaRule();
 
             CrawlerStart start = new CrawlerStart();
             start.IsDebug = false;
